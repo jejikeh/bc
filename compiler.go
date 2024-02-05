@@ -3,18 +3,22 @@ package main
 import "fmt"
 
 type Operation struct {
-	Kind    OperationKind
+	Kind    Token
 	Operand int
 }
 
 type Program []Operation
 
 type Compiler struct {
-	Instructions Program
+	Instructions  Program
+	AddressBuffer []int
 }
 
 func newCompiler() *Compiler {
-	return &Compiler{}
+	return &Compiler{
+		Instructions:  make(Program, 0),
+		AddressBuffer: make([]int, 0),
+	}
 }
 
 func (c *Compiler) compile(input string) (Program, error) {
@@ -22,21 +26,34 @@ func (c *Compiler) compile(input string) (Program, error) {
 	v := l.getNext()
 
 	lastOperation := Operation{
-		Kind:    End,
-		Operand: 0,
+		Kind: End,
 	}
 
-	for v != End {
+	for v.Kind != End {
 		op := Operation{
-			Kind:    v,
+			Kind:    v.Kind,
 			Operand: 1,
 		}
 
-		if lastOperation.Kind == v {
+		// [NOTE]: The instructions in Program a compressed. But this compression works
+		// only for some tokens which are stackable.
+		if v.Stackable && v.Kind == lastOperation.Kind {
 			lastOperation.Operand++
 			c.Instructions[len(c.Instructions)-1] = lastOperation
 			v = l.getNext()
+
 			continue
+		}
+
+		if v.Kind == JumpZero {
+			address := len(c.Instructions)
+			c.AddressBuffer = append(c.AddressBuffer, address)
+		}
+
+		if v.Kind == JumpNonZero {
+			if len(c.AddressBuffer) == 0 {
+				return nil, fmt.Errorf("stack underflow, JumpNonZero is reference to undefined stack value")
+			}
 		}
 
 		lastOperation = op

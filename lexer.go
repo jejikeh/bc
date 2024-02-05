@@ -1,18 +1,30 @@
 package main
 
-type OperationKind rune
+type OperationKind struct {
+	Kind      Token
+	Stackable bool
+}
+
+type Token rune
 
 const (
-	Increment   OperationKind = '+'
-	Decrement   OperationKind = '-'
-	Left        OperationKind = '<'
-	Right       OperationKind = '>'
-	Input       OperationKind = ','
-	Output      OperationKind = '.'
-	JumpZero    OperationKind = '['
-	JumpNonZero OperationKind = ']'
-	End         OperationKind = '∅'
+	Increment   Token = '+'
+	Decrement   Token = '-'
+	Left        Token = '<'
+	Right       Token = '>'
+	Input       Token = ','
+	Output      Token = '.'
+	JumpZero    Token = '['
+	JumpNonZero Token = ']'
+	End         Token = '∅'
 )
+
+func newOperationKind(kind Token, stackable bool) OperationKind {
+	return OperationKind{
+		Kind:      kind,
+		Stackable: stackable,
+	}
+}
 
 type Lexer struct {
 	Content  string
@@ -32,25 +44,25 @@ func (l *Lexer) getNext() OperationKind {
 
 		switch r {
 		case byte(Increment):
-			return Increment
+			return newOperationKind(Increment, true)
 		case byte(Decrement):
-			return Decrement
+			return newOperationKind(Decrement, true)
 		case byte(Left):
-			return Left
+			return newOperationKind(Left, true)
 		case byte(Right):
-			return Right
+			return newOperationKind(Right, true)
 		case byte(Input):
-			return Input
+			return newOperationKind(Input, true)
 		case byte(Output):
-			return Output
+			return newOperationKind(Output, true)
 		case byte(JumpZero):
-			return JumpZero
+			return newOperationKind(JumpZero, false)
 		case byte(JumpNonZero):
-			return JumpNonZero
+			return newOperationKind(JumpNonZero, false)
 		default:
 			return l.getNext()
 		}
 	}
 
-	return End
+	return newOperationKind(End, false)
 }
