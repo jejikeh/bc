@@ -50,10 +50,17 @@ func (c *Compiler) compile(input string) (Program, error) {
 			c.AddressBuffer = append(c.AddressBuffer, address)
 		}
 
+		// [INCOMPLETE]: Add Test for that.
 		if v.Kind == JumpNonZero {
 			if len(c.AddressBuffer) == 0 {
-				return nil, fmt.Errorf("stack underflow, JumpNonZero is reference to undefined stack value")
+				return nil, fmt.Errorf("[%d]: Error: Unbalanced loops", l.Position)
 			}
+
+			address := c.AddressBuffer[len(c.AddressBuffer)-1]
+			c.AddressBuffer = c.AddressBuffer[:len(c.AddressBuffer)-1]
+			c.Instructions[address].Operand = len(c.Instructions) + 1
+
+			op.Operand = address + 1
 		}
 
 		lastOperation = op

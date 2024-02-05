@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 )
 
@@ -43,11 +42,16 @@ func (b *Build) compile() {
 	}
 
 	c := newCompiler()
-	c.compile(string(content))
+	p, err := c.compile(string(content))
 
-	fmt.Println("wasm file generated")
+	if err != nil {
+		panic(err)
+	}
 
 	if *b.Trace {
 		c.trace()
 	}
+
+	r := newRunner(p)
+	r.exec()
 }
