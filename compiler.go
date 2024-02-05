@@ -17,27 +17,29 @@ func newCompiler() *Compiler {
 	return &Compiler{}
 }
 
-var lastOperation *Operation = nil
-
 func (c *Compiler) compile(input string) (Program, error) {
 	l := newLexer(input)
 	v := l.getNext()
+
+	lastOperation := Operation{
+		Kind:    End,
+		Operand: 0,
+	}
+
 	for v != End {
 		op := Operation{
 			Kind:    v,
 			Operand: 1,
 		}
 
-		if lastOperation != nil && (v == Increment || v == Decrement || v == Left || v == Right || v == Input || v == Output) {
-			if lastOperation.Kind == v {
-				lastOperation.Operand++
-				c.Instructions[len(c.Instructions)-1] = *lastOperation
-				v = l.getNext()
-				continue
-			}
+		if lastOperation.Kind == v {
+			lastOperation.Operand++
+			c.Instructions[len(c.Instructions)-1] = lastOperation
+			v = l.getNext()
+			continue
 		}
 
-		lastOperation = &op
+		lastOperation = op
 		c.Instructions = append(c.Instructions, op)
 		v = l.getNext()
 	}
