@@ -1,2 +1,3 @@
-# bfc
+# gobf
+
 brainfuck compiler

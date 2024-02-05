@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestInitCompiler(t *testing.T) {
 	compiler := newCompiler()
@@ -99,5 +102,20 @@ func TestDoNotCompressDifferentOperations(t *testing.T) {
 
 	if p[3].Kind != JumpNonZero {
 		t.Error("Kind should be JumpNonZero")
+	}
+}
+
+func TestHelloWorld(t *testing.T) {
+	compiler := newCompiler()
+	helloWorld, err := os.ReadFile("samples/hello.bf")
+
+	if err != nil {
+		t.Error("Error while opening hello.bf")
+	}
+
+	_, err = compiler.compile(string(helloWorld))
+
+	if err != nil {
+		t.Error("Error while compiling hello.bf")
 	}
 }
