@@ -69,7 +69,6 @@ func TestCompressSameOperationsMore(t *testing.T) {
 
 func TestDoNotCompressDifferentOperations(t *testing.T) {
 	compiler := newCompiler()
-
 	p, err := compiler.compile("+-[]")
 
 	if err != nil {
@@ -107,15 +106,23 @@ func TestDoNotCompressDifferentOperations(t *testing.T) {
 
 func TestHelloWorld(t *testing.T) {
 	compiler := newCompiler()
-	helloWorld, err := os.ReadFile("samples/hello.bf")
+	samples, err := os.ReadDir("samples")
 
 	if err != nil {
-		t.Error("Error while opening hello.bf")
+		t.Error("Error while opening samples directory")
 	}
 
-	_, err = compiler.compile(string(helloWorld))
+	for sample := range samples {
+		sampleContent, err := os.ReadFile("samples/" + samples[sample].Name())
 
-	if err != nil {
-		t.Error("Error while compiling hello.bf")
+		if err != nil {
+			t.Error("Error while opening", samples[sample].Name())
+		}
+
+		_, err = compiler.compile(string(sampleContent))
+
+		if err != nil {
+			t.Error("Error while compiling", samples[sample].Name())
+		}
 	}
 }
