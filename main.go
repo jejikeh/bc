@@ -5,27 +5,6 @@ import (
 	"os"
 )
 
-type OperationKind int
-
-const (
-	Increment OperationKind = iota
-	Decrement
-	Left
-	Right
-	Input
-	Output
-	JumpZero
-	JumpNonZero
-	Unknown
-)
-
-type Operation struct {
-	Kind    OperationKind
-	Operand int
-}
-
-type Program []Operation
-
 func main() {
 	inputFile := flag.String("i", "", "provide a input file")
 	outputFile := flag.String("o", "a.out", "output file")
