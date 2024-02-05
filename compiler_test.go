@@ -126,3 +126,77 @@ func TestHelloWorld(t *testing.T) {
 		}
 	}
 }
+
+func TestJumpZero(t *testing.T) {
+	compiler := newCompiler()
+	p, err := compiler.compile("++[--")
+
+	if err != nil {
+		t.Error("Error while compiling ++[-- program")
+	}
+
+	if len(p) != 3 {
+		t.Error("The size of the program is not equals 3")
+	}
+
+	jumpZero := p[1]
+
+	if jumpZero.Kind != JumpZero {
+		t.Error("The kind of second instruction is not equals JumpZero")
+	}
+
+	// check back-patching address
+	if len(compiler.AddressBuffer) != 1 {
+		t.Error("The length of AddressBuffer does not contain JumpZero address")
+	}
+
+	if compiler.AddressBuffer[0] != 1 {
+		t.Error("The address in buffer does not equals 1")
+	}
+}
+
+func TestManyJumpZero(t *testing.T) {
+	compiler := newCompiler()
+	p, err := compiler.compile("++[-[[[-[")
+
+	if err != nil {
+		t.Error("Error while compiling ++[-- program")
+	}
+
+	if len(p) != 8 {
+		t.Error("The size of the program is not equals 8")
+	}
+
+	jumpZero := p[1]
+
+	if jumpZero.Kind != JumpZero {
+		t.Error("The kind of second instruction is not equals JumpZero")
+	}
+
+	// check back-patching address
+	if len(compiler.AddressBuffer) != 5 {
+		t.Error("The length of AddressBuffer does not contain JumpZero address")
+	}
+
+	if compiler.AddressBuffer[0] != 1 || compiler.AddressBuffer[2] != 4 || compiler.AddressBuffer[4] != 7 {
+		t.Error("The address in is corrupted")
+	}
+}
+
+func TestUnBalancedJumpNonZeroWithoutPops(t *testing.T) {
+	c := newCompiler()
+	_, err := c.compile("-+...<<<]>>>")
+
+	if err == nil {
+		t.Error("Expected error when have unbalanced jumps")
+	}
+}
+
+func TestUnBalancedJumpNonZeroWithPops(t *testing.T) {
+	c := newCompiler()
+	_, err := c.compile("-[[-]]]]")
+
+	if err == nil {
+		t.Error("Expected error when have unbalanced jumps")
+	}
+}
