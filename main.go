@@ -52,6 +52,6 @@ func (b *Build) compile() {
 		c.trace()
 	}
 
-	r := newRunner(p)
-	r.exec()
+	r := newRunner()
+	r.run(p)
 }

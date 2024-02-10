@@ -3,22 +3,20 @@ package main
 import "fmt"
 
 type Runner struct {
-	Run                Program
 	Memory             []rune
 	Head               int
 	InstructionPointer int
 }
 
-func newRunner(program Program) Runner {
+func newRunner() Runner {
 	return Runner{
-		Run:    program,
 		Memory: make([]rune, 2),
 	}
 }
 
-func (r *Runner) exec() {
-	for r.InstructionPointer < len(r.Run) {
-		v := r.Run[r.InstructionPointer]
+func (r *Runner) run(program Program) {
+	for r.InstructionPointer < len(program) {
+		v := program[r.InstructionPointer]
 		switch v.Kind {
 		case Increment:
 			r.Memory[r.Head] += rune(v.Operand)
@@ -27,7 +25,7 @@ func (r *Runner) exec() {
 			r.Memory[r.Head] -= rune(v.Operand)
 			r.InstructionPointer += 1
 		case Left:
-			if r.Head < r.Run[r.InstructionPointer].Operand {
+			if r.Head < program[r.InstructionPointer].Operand {
 				panic("Runtime Error. Memory underflow")
 			}
 			r.Head -= v.Operand
@@ -46,13 +44,13 @@ func (r *Runner) exec() {
 			r.InstructionPointer += 1
 		case JumpZero:
 			if r.Memory[r.Head] == 0 {
-				r.InstructionPointer = r.Run[r.InstructionPointer].Operand
+				r.InstructionPointer = program[r.InstructionPointer].Operand
 			} else {
 				r.InstructionPointer += 1
 			}
 		case JumpNonZero:
 			if r.Memory[r.Head] != 0 {
-				r.InstructionPointer = r.Run[r.InstructionPointer].Operand
+				r.InstructionPointer = program[r.InstructionPointer].Operand
 			} else {
 				r.InstructionPointer += 1
 			}
