@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"os"
+
+	"github.com/jejikeh/gobf/bytecode"
 )
 
 type Build struct {
@@ -19,7 +21,6 @@ func NewBuild() *Build {
 
 	build.Input = build.String("i", "", "provide a input file")
 	build.Output = build.String("o", "a.out", "output file")
-	build.Trace = build.Bool("t", false, "trace the program")
 
 	return build
 }
@@ -35,21 +36,10 @@ func main() {
 }
 
 func (b *Build) compile() {
-	content, err := os.ReadFile(*b.Input)
+	p, err := bytecode.Generate(*b.Input)
 
 	if err != nil {
 		panic(err)
-	}
-
-	c := newCompiler()
-	p, err := c.compile(string(content))
-
-	if err != nil {
-		panic(err)
-	}
-
-	if *b.Trace {
-		c.trace()
 	}
 
 	r := newRunner()

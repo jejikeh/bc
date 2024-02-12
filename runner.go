@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/jejikeh/gobf/bytecode"
+)
 
 type Runner struct {
 	Memory             []rune
@@ -14,43 +18,43 @@ func newRunner() Runner {
 	}
 }
 
-func (r *Runner) run(program Program) {
+func (r *Runner) run(program []bytecode.IntermediateRepresentation) {
 	for r.InstructionPointer < len(program) {
 		v := program[r.InstructionPointer]
-		switch v.Kind {
-		case Increment:
-			r.Memory[r.Head] += rune(v.Operand)
+		switch v.Token.Kind {
+		case bytecode.Increment:
+			r.Memory[r.Head] += rune(v.Op)
 			r.InstructionPointer += 1
-		case Decrement:
-			r.Memory[r.Head] -= rune(v.Operand)
+		case bytecode.Decrement:
+			r.Memory[r.Head] -= rune(v.Op)
 			r.InstructionPointer += 1
-		case Left:
-			if r.Head < program[r.InstructionPointer].Operand {
+		case bytecode.Left:
+			if r.Head < program[r.InstructionPointer].Op {
 				panic("Runtime Error. Memory underflow")
 			}
-			r.Head -= v.Operand
+			r.Head -= v.Op
 			r.InstructionPointer += 1
-		case Right:
-			r.Head += v.Operand
+		case bytecode.Right:
+			r.Head += v.Op
 
 			for r.Head >= len(r.Memory) {
 				r.Memory = append(r.Memory, 1)
 			}
 
 			r.InstructionPointer += 1
-		case Input:
-		case Output:
+		case bytecode.Input:
+		case bytecode.Output:
 			fmt.Printf("%c", r.Memory[r.Head])
 			r.InstructionPointer += 1
-		case JumpZero:
+		case bytecode.MarkJump:
 			if r.Memory[r.Head] == 0 {
-				r.InstructionPointer = program[r.InstructionPointer].Operand
+				r.InstructionPointer = program[r.InstructionPointer].Op
 			} else {
 				r.InstructionPointer += 1
 			}
-		case JumpNonZero:
+		case bytecode.Jump:
 			if r.Memory[r.Head] != 0 {
-				r.InstructionPointer = program[r.InstructionPointer].Operand
+				r.InstructionPointer = program[r.InstructionPointer].Op
 			} else {
 				r.InstructionPointer += 1
 			}
