@@ -21,8 +21,6 @@ func newRunner() Runner {
 	}
 }
 
-var i = 0
-
 func (r *Runner) run(program []bytecode.IntermediateRepresentation) {
 	for r.InstructionPointer < len(program) {
 		v := program[r.InstructionPointer]
@@ -53,14 +51,8 @@ func (r *Runner) run(program []bytecode.IntermediateRepresentation) {
 			r.Memory[r.Head] = rune(b[0])
 			r.InstructionPointer += 1
 		case bytecode.Output:
-			if r.Memory[r.Head] == '\n' {
-				fmt.Printf("\n%d: ", i+1)
-				r.InstructionPointer += 1
-				i += 1
-			} else {
-				fmt.Printf("%c", r.Memory[r.Head])
-				r.InstructionPointer += 1
-			}
+			fmt.Printf("%c", r.Memory[r.Head])
+			r.InstructionPointer += 1
 		case bytecode.MarkJump:
 			if r.Memory[r.Head] == 0 {
 				r.InstructionPointer = program[r.InstructionPointer].Op
