@@ -140,7 +140,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 	},
 	{
 		Token: Token{Kind: MarkJump, Position: 8},
-		Op:    0,
+		Op:    29,
 	},
 	{
 		Token: Token{Kind: Right, Position: 9},
@@ -152,7 +152,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 	},
 	{
 		Token: Token{Kind: MarkJump, Position: 14},
-		Op:    0,
+		Op:    15,
 	},
 	{
 		Token: Token{Kind: Right, Position: 15},
@@ -196,7 +196,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 	},
 	{
 		Token: Token{Kind: Jump, Position: 33},
-		Op:    100,
+		Op:    4,
 	},
 	{
 		Token: Token{Kind: Right, Position: 34},
@@ -232,7 +232,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 	},
 	{
 		Token: Token{Kind: MarkJump, Position: 43},
-		Op:    1,
+		Op:    26,
 	},
 	{
 		Token: Token{Kind: Left, Position: 44},
@@ -240,7 +240,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 	},
 	{
 		Token: Token{Kind: Jump, Position: 45},
-		Op:    1,
+		Op:    24,
 	},
 	{
 		Token: Token{Kind: Left, Position: 46},
@@ -252,7 +252,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 	},
 	{
 		Token: Token{Kind: Jump, Position: 48},
-		Op:    1000,
+		Op:    1,
 	},
 	{
 		Token: Token{Kind: Right, Position: 49},
@@ -267,7 +267,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 		Op:    1,
 	},
 	{
-		Token: Token{Kind: Increment, Position: 53},
+		Token: Token{Kind: Decrement, Position: 53},
 		Op:    3,
 	},
 	{
@@ -367,7 +367,7 @@ var helloIntermediateRepresentation = []IntermediateRepresentation{
 		Op:    1,
 	},
 	{
-		Token: Token{Kind: End, Position: 107},
+		Token: Token{Kind: End, Position: 106},
 		Op:    0,
 	},
 }

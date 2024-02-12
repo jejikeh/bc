@@ -24,17 +24,17 @@ func generate(path string) ([]IntermediateRepresentation, error) {
 	for _, r := range lex(fileContent) {
 		switch r.Kind {
 		case Increment:
-			ir = appendOrIncrement(ir, Increment)
+			ir = appendOrIncrement(ir, r)
 		case Decrement:
-			ir = appendOrIncrement(ir, Decrement)
+			ir = appendOrIncrement(ir, r)
 		case Left:
-			ir = appendOrIncrement(ir, Left)
+			ir = appendOrIncrement(ir, r)
 		case Right:
-			ir = appendOrIncrement(ir, Right)
+			ir = appendOrIncrement(ir, r)
 		case Input:
-			ir = appendOrIncrement(ir, Input)
+			ir = appendOrIncrement(ir, r)
 		case Output:
-			ir = appendOrIncrement(ir, Output)
+			ir = appendOrIncrement(ir, r)
 		case MarkJump:
 			jumps = append(jumps, len(ir))
 			ir = append(ir, IntermediateRepresentation{Token: r, Op: 0})
@@ -49,15 +49,17 @@ func generate(path string) ([]IntermediateRepresentation, error) {
 			ir[lastJump].Op = len(ir)
 
 			ir = append(ir, IntermediateRepresentation{Token: r, Op: lastJump})
+		case End:
+			ir = append(ir, IntermediateRepresentation{Token: r, Op: 0})
 		}
 	}
 
 	return ir, nil
 }
 
-func appendOrIncrement(ir []IntermediateRepresentation, token Kind) []IntermediateRepresentation {
-	if len(ir) == 0 || ir[len(ir)-1].Token.Kind != token {
-		ir = append(ir, IntermediateRepresentation{Token: Token{Kind: token}, Op: 1})
+func appendOrIncrement(ir []IntermediateRepresentation, token Token) []IntermediateRepresentation {
+	if len(ir) == 0 || ir[len(ir)-1].Token.Kind != token.Kind {
+		ir = append(ir, IntermediateRepresentation{Token: token, Op: 1})
 	} else {
 		ir[len(ir)-1].Op++
 	}
@@ -79,15 +81,15 @@ func TestGenerateCheckHardCodeSample(t *testing.T) {
 
 	for i, ir := range b {
 		if ir.Token.Kind != helloIntermediateRepresentation[i].Token.Kind {
-			t.Errorf("Expected Kind '%c' but got '%c'", helloIntermediateRepresentation[i], ir.Token.Kind)
+			t.Errorf("Expected Kind '%c' but got '%c' at %d", helloIntermediateRepresentation[i].Token.Kind, ir.Token.Kind, ir.Token.Position)
 		}
 
 		if ir.Op != helloIntermediateRepresentation[i].Op {
-			t.Errorf("Expected Op %d but got %d", helloIntermediateRepresentation[i].Op, ir.Op)
+			t.Errorf("Expected Op %d but got %d at %d", helloIntermediateRepresentation[i].Op, ir.Op, ir.Token.Position)
 		}
 
 		if ir.Token.Position != helloIntermediateRepresentation[i].Token.Position {
-			t.Errorf("Expected Position %d but got %d", helloIntermediateRepresentation[i].Token.Position, ir.Token.Position)
+			t.Errorf("Expected Position %d but got %d at %d", helloIntermediateRepresentation[i].Token.Position, ir.Token.Position, ir.Token.Position)
 		}
 	}
 }
