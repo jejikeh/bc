@@ -7,35 +7,34 @@ import (
 	"github.com/jejikeh/gobf/bytecode"
 )
 
-type Build struct {
+type Run struct {
 	*flag.FlagSet
 	Input  *string
 	Output *string
-	Trace  *bool
 }
 
-func NewBuild() *Build {
-	build := &Build{
+func NewRun() *Run {
+	run := &Run{
 		FlagSet: flag.NewFlagSet("build", flag.ExitOnError),
 	}
 
-	build.Input = build.String("i", "", "provide a input file")
-	build.Output = build.String("o", "a.out", "output file")
+	run.Input = run.String("i", "", "provide a input file")
+	run.Output = run.String("o", "a.out", "output file")
 
-	return build
+	return run
 }
 
 func main() {
-	buildCmd := NewBuild()
+	runCmd := NewRun()
 
 	switch os.Args[1] {
-	case "build":
-		buildCmd.Parse(os.Args[2:])
-		buildCmd.compile()
+	case "run":
+		runCmd.Parse(os.Args[2:])
+		runCmd.compile()
 	}
 }
 
-func (b *Build) compile() {
+func (b *Run) compile() {
 	p, err := bytecode.Generate(*b.Input)
 
 	if err != nil {

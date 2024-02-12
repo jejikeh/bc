@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/jejikeh/gobf/bytecode"
 )
@@ -14,9 +15,13 @@ type Runner struct {
 
 func newRunner() Runner {
 	return Runner{
-		Memory: make([]rune, 2),
+		Memory:             make([]rune, 100000),
+		Head:               0,
+		InstructionPointer: 0,
 	}
 }
+
+var i = 0
 
 func (r *Runner) run(program []bytecode.IntermediateRepresentation) {
 	for r.InstructionPointer < len(program) {
@@ -43,9 +48,19 @@ func (r *Runner) run(program []bytecode.IntermediateRepresentation) {
 
 			r.InstructionPointer += 1
 		case bytecode.Input:
-		case bytecode.Output:
-			fmt.Printf("%c", r.Memory[r.Head])
+			b := make([]byte, 1)
+			os.Stdin.Read(b)
+			r.Memory[r.Head] = rune(b[0])
 			r.InstructionPointer += 1
+		case bytecode.Output:
+			if r.Memory[r.Head] == '\n' {
+				fmt.Printf("\n%d: ", i+1)
+				r.InstructionPointer += 1
+				i += 1
+			} else {
+				fmt.Printf("%c", r.Memory[r.Head])
+				r.InstructionPointer += 1
+			}
 		case bytecode.MarkJump:
 			if r.Memory[r.Head] == 0 {
 				r.InstructionPointer = program[r.InstructionPointer].Op
@@ -58,6 +73,8 @@ func (r *Runner) run(program []bytecode.IntermediateRepresentation) {
 			} else {
 				r.InstructionPointer += 1
 			}
+		case bytecode.End:
+			return
 		}
 	}
 }
